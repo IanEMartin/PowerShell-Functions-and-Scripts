@@ -62,15 +62,17 @@ function Update-Sysinternals {
       Update-PathEnvironmentVariable -NewPath $Destination -UpdateRegistry
     }
     if ($RemoveDownloadFile) {
+      $zip.Dispose()
+      Start-Sleep -Seconds 2
       Remove-Item -Path $OutFile -Force
+    }
+    # Restart any applications that were running previously
+    if ($Paths) {
+      $Paths | ForEach-Object { Start-Process -FilePath $_.Path }
     }
   } Catch {
     Write-Warning -Message $_
   } finally {
     $zip.Dispose()
-    # Restart any applications that were running previously
-    if ($Paths) {
-      $Paths | ForEach-Object { Start-Process -FilePath $_.Path }
-    }
   }
 }#End function Update-Sysinternals
